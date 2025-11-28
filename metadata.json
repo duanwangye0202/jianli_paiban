@@ -1,0 +1,5 @@
+{
+  "name": "BioCraft - Intelligent Resume Formatter",
+  "description": "A batch processing tool that extracts, categorizes, and beautifully formats biographical profiles from Word documents using Gemini AI.",
+  "requestFramePermissions": []
+}
