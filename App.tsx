@@ -4,7 +4,7 @@ import { extractTextFromDocx } from './services/fileService';
 import { processProfileWithGemini } from './services/geminiService';
 import { generateAndDownloadDocx } from './services/exportService';
 import { ProfileRenderer } from './components/ProfileRenderer';
-import { v4 as uuidv4 } from 'uuid'; // Since I cannot import external libraries I will write a simple ID generator helper below
+
 // We'll replace uuidv4 with a simple helper since we can't install packages freely in this strict generation mode
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
