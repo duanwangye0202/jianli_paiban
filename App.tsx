@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { DocFile, ProcessingStatus, FormattedProfile } from './types';
 import { extractTextFromDocx } from './services/fileService';
 import { processProfileWithGemini } from './services/geminiService';
+import { generateAndDownloadDocx } from './services/exportService';
 import { ProfileRenderer } from './components/ProfileRenderer';
 import { v4 as uuidv4 } from 'uuid'; // Since I cannot import external libraries I will write a simple ID generator helper below
 // We'll replace uuidv4 with a simple helper since we can't install packages freely in this strict generation mode
@@ -75,6 +76,10 @@ export default function App() {
 
   const updateFileState = (id: string, updates: Partial<DocFile>) => {
     setFiles(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
+  };
+
+  const handleProfileUpdate = (fileId: string, updatedProfile: FormattedProfile) => {
+    updateFileState(fileId, { result: updatedProfile });
   };
 
   const onDragOver = (e: React.DragEvent) => {
@@ -198,7 +203,23 @@ export default function App() {
         {selectedDoc ? (
           <div className="w-full max-w-4xl animate-fade-in">
              {selectedDoc.status === ProcessingStatus.COMPLETED && selectedDoc.result ? (
-               <ProfileRenderer data={selectedDoc.result} />
+               <div className="flex flex-col gap-4">
+                 <div className="flex justify-end">
+                    <button
+                      onClick={() => selectedDoc.result && generateAndDownloadDocx(selectedDoc.result)}
+                      className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download .docx
+                    </button>
+                 </div>
+                 <ProfileRenderer 
+                   data={selectedDoc.result} 
+                   onUpdate={(updated) => handleProfileUpdate(selectedDoc.id, updated)}
+                 />
+               </div>
              ) : (
                <div className="bg-white rounded-xl shadow-sm p-12 text-center h-[29.7cm] flex flex-col items-center justify-center">
                  {selectedDoc.status === ProcessingStatus.ERROR ? (
